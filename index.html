@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Circular Construction</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+    .slide-container {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: white;
+      padding: 40px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+    h1 {
+      color: #2d572c;
+      font-size: 3em;
+      margin-bottom: 0.2em;
+    }
+    h2 {
+      color: #3a3a3a;
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+    .highlight {
+      background-color: #c6efce;
+      color: #2d572c;
+      padding: 5px 10px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+    .idea-blocks {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 30px;
+      gap: 20px;
+    }
+    .block {
+      background: #eaf7ea;
+      border: 1px solid #c9eac9;
+      border-radius: 10px;
+      padding: 20px;
+      width: 250px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .block h3 {
+      margin-top: 0;
+      color: #2d572c;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #555;
+    }
+    .section-title {
+      font-size: 2em;
+      color: #2d572c;
+      margin-top: 30px;
+    }
+    .cta-button {
+      background-color: #2d572c;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 25px;
+      font-size: 1.2em;
+      margin-top: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .cta-button:hover {
+      background-color: #3a703a;
+      transform: scale(1.05);
+    }
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #2d572c;
+      padding: 10px 0;
+      z-index: 1000;
+    }
+    nav ul {
+      display: flex;
+      justify-content: center;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    nav li {
+      margin: 0 15px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    nav a:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+    
+    /* Interactive Tool Styles */
+    #interactive-tool {
+      background-color: #f9f9f9;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    #wall-display {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      background-color: #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+    .wall-section {
+      position: absolute;
+      height: 100%;
+      transition: all 0.5s ease;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .control-group {
+      background-color: #f0f8f0;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #2d572c;
+    }
+    select, input[type="range"] {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+    .stats {
+      background-color: #eaf7ea;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .eco-rating {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .comparison {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .material-info {
+      margin-top: 30px;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+    }
+    .reset-btn {
+      background-color: #2d572c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .reset-btn:hover {
+      background-color: #3a703a;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="#carbon-labels">Carbon Labels</a></li>
+      <li><a href="#green-credits">Air Credits</a></li>
+      <li><a href="#interactive-tool">Interactive Tool</a></li>
+    </ul>
+  </nav>
+
+  <div id="carbon-labels" class="slide-container">
+    <h1>Carbon Footprint Labels</h1>
+    <h2>Simple labels to explain <span class="highlight">CO₂ impact</span> like nutrition facts on food!</h2>
+    <div class="idea-blocks">
+      <div class="block">
+        <h3>Example:</h3>
+        <p><strong>Product A:</strong> Saves 1.2 kg CO₂ → That's like 2 hours of fresh air in a forest!</p>
+        <p><strong>Product B:</strong> Emits 5.6 kg CO₂ → Equal to driving 25 km by car.</p>
+      </div>
+      <div class="block">
+        <h3>What the Label Shows</h3>
+        <p>It can show the impact as: Breathable air saved, amount of trees planted, equivalent car mileage reduced or distance covered.</p>
+      </div>
+      <div class="block">
+        <h3>Why This Works</h3>
+        <p>Ordinary people relate better to real-life effects than technical numbers.</p>
+      </div>
+   
+
+<!-- Carbon Footprint Label Images Section -->
+<div class="label-images" style="margin: 50px 0; text-align: center;">
+    <h2 style="color: #2d572c; margin-bottom: 20px;">Carbon Footprint Label Examples</h2>
+    <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+      <div style="max-width: 350px; border: 1px solid #c9eac9; border-radius: 10px; padding: 15px; background-color: #f5f5f5;">
+        <img src="./models/picty.png" alt="Carbon Footprint Label Example 1" style="max-width: 100%; border-radius: 8px;">
+        <p style="margin-top: 10px; font-weight: bold;">Positive Impact Label</p>
+      </div>
+      <div style="max-width: 350px; border: 1px solid #c9eac9; border-radius: 10px; padding: 15px; background-color: #f5f5f5;">
+        <img src="./models/pic2ty.png" alt="Carbon Footprint Label Example 2" style="max-width: 100%; border-radius: 8px;">
+        <p style="margin-top: 10px; font-weight: bold;">Negative Impact Label</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+<a href="#green-credits" class="cta-button">Learn About Air Credits</a>
+</div>
+
+  <div id="green-credits" class="slide-container">
+    <h1>Air Credits</h1>
+    <h2>A reward system for choosing <span class="highlight">recycled construction materials</span></h2>
+    <div class="idea-blocks">
+      <div class="block">
+        <h3>How It Works</h3>
+        <p>Use at least one recycled material in a construction project → earn 1 Air Credit.</p>
+      </div>
+      <div class="block">
+        <h3>What You Get</h3>
+        <p>Credits can give discounts on eco-products, services, or community recognition. It can even be rewarded as monetary benefits. It can be first implemented in municipalities or even shops.</p>
+      </div>
+      <div class="block">
+        <h3>Why It Matters</h3>
+        <p>Build awareness through action. Show people that sustainable choices are rewarding and visible.</p>
+      </div>
+    </div>
+    <div class="footer">
+      <strong>Ready to see it in action?</strong><br>
+      Try our interactive tool below to compare materials and their CO₂ impact.
+    </div>
+    <a href="#interactive-tool" class="cta-button">Explore the Interactive Tool</a>
+  </div>
+
+  <div id="interactive-tool" class="slide-container">
+    <h1>What's in Your Walls?</h1>
+    <h2>Interactive CO₂ comparison tool for <span class="highlight">construction materials</span></h2>
+    
+    <div class="container">
+      <div id="wall-display"></div>
+      
+      <div class="controls">
+        <div class="control-group">
+          <label for="insulation">Insulation Type:</label>
+          <select id="insulation">
+            <option value="mineral-wool">Mineral Wool</option>
+            <option value="cellulose">Recycled Cellulose</option>
+            <option value="foam">Foam Board</option>
+            <option value="straw">Straw</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="structure">Wall Structure:</label>
+          <select id="structure">
+            <option value="wood">Wood Frame</option>
+            <option value="recycled-steel">Recycled Steel</option>
+            <option value="concrete">Concrete</option>
+            <option value="bamboo">Bamboo</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="exterior">Exterior Finish:</label>
+          <select id="exterior">
+            <option value="brick">Brick</option>
+            <option value="recycled-wood">Recycled Wood Siding</option>
+            <option value="vinyl">Vinyl Siding</option>
+            <option value="stucco">Lime Stucco</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="wall-size">Wall Size (m²):</label>
+          <input type="range" id="wall-size" min="10" max="100" value="25" step="5">
+          <span id="size-value">25 m²</span>
+        </div>
+      </div>
+      
+      <div class="stats">
+        <div class="eco-rating">Sustainability Score: <span id="eco-score">0</span>/10</div>
+        <div>CO₂ Impact: <span id="co2-impact">0</span> kg</div>
+        <div class="comparison" id="co2-comparison">
+          That's equivalent to driving <span id="car-km">0</span> km in a car.
+        </div>
+        <div class="green-credits">
+          Air Credits Earned: <span id="credits">0</span>
+        </div>
+        <button class="reset-btn" id="reset">Reset Selections</button>
+      </div>
+      
+      <div class="material-info">
+        <h3>About Your Materials</h3>
+        <p id="material-description">Select materials to see their environmental impact.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Material database with CO2 impact and descriptions
+    const materials = {
+      insulation: {
+        "mineral-wool": {
+          name: "Mineral Wool",
+          co2: 1.2,
+          recycled: false,
+          description: "Standard insulation with moderate CO2 impact."
+        },
+        "cellulose": {
+          name: "Recycled Cellulose",
+          co2: 0.4,
+          recycled: true,
+          description: "Made from recycled paper, very low carbon footprint."
+        },
+        "foam": {
+          name: "Foam Board",
+          co2: 2.5,
+          recycled: false,
+          description: "Petroleum-based with higher environmental impact."
+        },
+        "straw": {
+          name: "Straw",
+          co2: 0.1,
+          recycled: false,
+          description: "Natural material with minimal carbon footprint."
+        }
+      },
+      structure: {
+        "wood": {
+          name: "Wood Frame",
+          co2: 0.8,
+          recycled: false,
+          description: "Renewable material with good carbon sequestration."
+        },
+        "recycled-steel": {
+          name: "Recycled Steel",
+          co2: 1.0,
+          recycled: true,
+          description: "Durable material made from recycled content."
+        },
+        "concrete": {
+          name: "Concrete",
+          co2: 3.5,
+          recycled: false,
+          description: "High embodied carbon but very durable."
+        },
+        "bamboo": {
+          name: "Bamboo",
+          co2: 0.3,
+          recycled: false,
+          description: "Fast-growing renewable material with low impact."
+        }
+      },
+      exterior: {
+        "brick": {
+          name: "Brick",
+          co2: 2.0,
+          recycled: false,
+          description: "Durable but energy-intensive to manufacture."
+        },
+        "recycled-wood": {
+          name: "Recycled Wood Siding",
+          co2: 0.5,
+          recycled: true,
+          description: "Repurposed wood with minimal additional processing."
+        },
+        "vinyl": {
+          name: "Vinyl Siding",
+          co2: 2.2,
+          recycled: false,
+          description: "Petroleum-based product with higher impacts."
+        },
+        "stucco": {
+          name: "Lime Stucco",
+          co2: 1.0,
+          recycled: false,
+          description: "Traditional finish with moderate carbon impact."
+        }
+      }
+    };
+
+    // Colors for wall sections
+    const colors = {
+      insulation: {
+        "mineral-wool": "#FFC1B6",
+        "cellulose": "#90EE90",
+        "foam": "#FFAAA5",
+        "straw": "#FFFFB5"
+      },
+      structure: {
+        "wood": "#D4A76A",
+        "recycled-steel": "#A9A9A9",
+        "concrete": "#C0C0C0",
+        "bamboo": "#D4B96A"
+      },
+      exterior: {
+        "brick": "#CF5C36",
+        "recycled-wood": "#8E6C3D",
+        "vinyl": "#B8D8E3",
+        "stucco": "#F2EEE3"
+      }
+    };
+
+    // DOM elements
+    const elements = {
+      insulation: document.getElementById('insulation'),
+      structure: document.getElementById('structure'),
+      exterior: document.getElementById('exterior'),
+      wallSize: document.getElementById('wall-size'),
+      sizeValue: document.getElementById('size-value'),
+      wallDisplay: document.getElementById('wall-display'),
+      ecoScore: document.getElementById('eco-score'),
+      co2Impact: document.getElementById('co2-impact'),
+      carKm: document.getElementById('car-km'),
+      credits: document.getElementById('credits'),
+      materialDescription: document.getElementById('material-description'),
+      resetBtn: document.getElementById('reset')
+    };
+
+    // Initialize wall display
+    function initWallDisplay() {
+      // Clear previous content
+      elements.wallDisplay.innerHTML = '';
+      
+      // Create wall sections
+      const sections = ['exterior', 'structure', 'insulation'];
+      sections.forEach((section, index) => {
+        const width = index === 0 ? 20 : index === 1 ? 30 : 50;
+        const left = index === 0 ? 0 : index === 1 ? 20 : 50;
+        
+        const element = document.createElement('div');
+        element.classList.add('wall-section');
+        element.id = `${section}-section`;
+        element.style.width = `${width}%`;
+        element.style.left = `${left}%`;
+        
+        elements.wallDisplay.appendChild(element);
+      });
+      
+      updateWall();
+    }
+
+    // Update wall visualization
+    function updateWall() {
+      // Update section colors
+      document.getElementById('insulation-section').style.backgroundColor = 
+        colors.insulation[elements.insulation.value];
+      
+      document.getElementById('structure-section').style.backgroundColor = 
+        colors.structure[elements.structure.value];
+      
+      document.getElementById('exterior-section').style.backgroundColor = 
+        colors.exterior[elements.exterior.value];
+      
+      calculateImpact();
+    }
+
+    // Calculate environmental impact
+    function calculateImpact() {
+      const size = parseInt(elements.wallSize.value);
+      elements.sizeValue.textContent = `${size} m²`;
+      
+      // Get selected materials
+      const insulationMat = materials.insulation[elements.insulation.value];
+      const structureMat = materials.structure[elements.structure.value];
+      const exteriorMat = materials.exterior[elements.exterior.value];
+      
+      // Calculate CO2 impact (kg)
+      const co2Impact = (
+        (insulationMat.co2 + structureMat.co2 + exteriorMat.co2) * size
+      ).toFixed(1);
+      
+      elements.co2Impact.textContent = co2Impact;
+      
+      // Calculate car equivalent (approximately 0.12 kg CO2 per km)
+      const carKm = Math.round(parseFloat(co2Impact) / 0.12);
+      elements.carKm.textContent = carKm;
+      
+      // Calculate score (0-10)
+      // Lower CO2 per m² = higher score
+      const maxCO2PerM2 = 8.2; // Maximum possible from our options
+      const currentCO2PerM2 = parseFloat(co2Impact) / size;
+      const score = Math.round((1 - (currentCO2PerM2 / maxCO2PerM2)) * 10);
+      elements.ecoScore.textContent = score;
+      
+      // Calculate green credits
+      const recycledCount = [insulationMat, structureMat, exteriorMat].filter(mat => mat.recycled).length;
+      elements.credits.textContent = recycledCount;
+      
+      // Update material description
+      elements.materialDescription.innerHTML = `
+        <strong>${insulationMat.name} Insulation:</strong> ${insulationMat.description}
+        ${insulationMat.recycled ? ' <span class="highlight">Recycled material!</span>' : ''}<br><br>
+        <strong>${structureMat.name}:</strong> ${structureMat.description}
+        ${structureMat.recycled ? ' <span class="highlight">Recycled material!</span>' : ''}<br><br>
+        <strong>${exteriorMat.name}:</strong> ${exteriorMat.description}
+        ${exteriorMat.recycled ? ' <span class="highlight">Recycled material!</span>' : ''}
+      `;
+    }
+
+    // Reset selections
+    function resetSelections() {
+      elements.insulation.value = 'mineral-wool';
+      elements.structure.value = 'wood';
+      elements.exterior.value = 'brick';
+      elements.wallSize.value = 25;
+      elements.sizeValue.textContent = '25 m²';
+      
+      updateWall();
+    }
+
+    // Event listeners
+    elements.insulation.addEventListener('change', updateWall);
+    elements.structure.addEventListener('change', updateWall);
+    elements.exterior.addEventListener('change', updateWall);
+    elements.wallSize.addEventListener('input', updateWall);
+    elements.resetBtn.addEventListener('click', resetSelections);
+
+    // Initialize the tool
+    document.addEventListener('DOMContentLoaded', () => {
+      initWallDisplay();
+      
+      // Add smooth scrolling for navigation
+      document.querySelectorAll('nav a, .cta-button').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          document.querySelector(targetId).scrollIntoView({
+            behavior: 'smooth'
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>
